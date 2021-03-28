@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback, useEffect, useRef } from 'react'
+import React, { createContext, useState, useCallback, useEffect } from 'react'
 import data from './data.json'
 
 const dataContext = createContext();
@@ -10,34 +10,22 @@ const defaultFilterFunc = (type, search) => data.filter(item => type ? item.type
     return regex.test(i.productName)
 })
 
-
 const createStore = (initial = data, filterFunc = defaultFilterFunc) => ({ children }) => {
     const [data, setData] = useState(initial)
     const [type, setType] = useState('');
     const [search, setSearch] = useState('')
-    const timerRef = useRef(null)
 
     const changeType = useCallback(
         (event) => {
-            console.log(event.target.value)
             setType(event.target.value)
         },
         [setType],
     )
 
-    const changeSearchContent = useCallback(
-        (event) => {
-            const next = event.target.value;
-            console.log(next)
-            if(timerRef.current) clearTimeout(timerRef.current) //debounce user search
-            timerRef.current = setTimeout(() => { 
-                setSearch(next)
-                clearTimeout(timerRef.current)
-            }, 500)
-            
-        },
-        [setSearch],
-    )
+    const changeSearchContent = useCallback( event => {
+        const next = event.target.value
+        setSearch(next)
+    },[setSearch])
 
     useEffect(() => {
         setData([...filterFunc(type, search)])
